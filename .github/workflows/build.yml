@@ -6,13 +6,39 @@ on:
       - master
   push:
     branches:
+      - bugfix/**
+      - feature/**
       - master
 
 jobs:
-  build:
-
+  build_node:
+    name: Build frontend
     runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v3.0.0
+      with:
+        node-version: '16'
+        cache: npm
+        cache-dependency-path: 'src/main/webapp/package-lock.json'
+    - name: Clean install npm dependencies
+      working-directory: src/main/webapp
+      run: npm ci
+    - name: Build frontend with npm
+      working-directory: src/main/webapp
+      run: npm run-script build
+    - name: Upload frontend build
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend
+        path: src/main/webapp/dist
+        retention-days: 7
 
+  build_maven:
+    name: Build maven
+    needs: build_node
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 8
@@ -21,11 +47,16 @@ jobs:
         distribution: 'temurin'
         java-version: '8'
         cache: maven
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v3.0.0
+    - name: Download frontend build
+      uses: actions/download-artifact@v3
       with:
-        node-version: '16'
-        cache: npm
-        cache-dependency-path: 'src/main/webapp/package-lock.json'
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+        name: frontend
+        path: src/main/webapp/dist/
+    - name: Build RPM with maven without frontend
+      run: mvn -B verify rpm:rpm -Psonatype-oss-release,!webapp -Dmaven.javadoc.skip=true -Dgpg.skip=true --file pom.xml
+    - name: Upload RPM
+      uses: actions/upload-artifact@v3
+      with:
+        name: rpm
+        path: target/rpm/cloudconductor/RPMS/noarch/*.rpm
+        retention-days: 7

@@ -490,30 +490,6 @@
                             </additionalDependencies>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>/srv/packages/s3-cloudconductor</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${basedir}/target/rpm/cloudconductor/RPMS/noarch/</directory>
-                                            <includes>
-                                                <include>*.rpm</include>
-                                            </includes>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
             </build>
         </profile>
