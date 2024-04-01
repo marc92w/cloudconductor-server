@@ -7,7 +7,6 @@ import { WebSocketService } from '../util/websockets/websocket.service';
 import { HostsService } from '../util/hosts/hosts.service';
 import { PackageChangesService } from '../util/packagechanges/packagechanges.service';
 import { RepoScansService } from '../util/reposcans/reposcans.service';
-import { JwtInterceptor } from '../util/http/jwt.interceptor';
 import { AuthTokenProviderService } from '../util/auth/authtokenprovider.service';
 import { ConfigValueHttpService } from '../util/http/configValue.http.service';
 import { RepoMirrorHttpService } from '../util/http/repomirror.http.service';
@@ -47,7 +46,6 @@ import { ServiceUsageHttpService } from '../util/http/serviceUsage.http.service'
     PackageChangesService,
     RepoScansService,
     WebSocketService,
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
     AdditionalLinkHttpService,
     AuthHttpService,

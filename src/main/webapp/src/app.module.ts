@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { TitleStrategy } from "@angular/router";
 
 import { ConfirmationPopoverModule } from 'angular-confirmation-popover';
+import { JwtModule } from "@auth0/angular-jwt";
 
 import { CoreModule } from './app/core/core.module';
 import { SharedModule } from './app/shared/shared.module';
@@ -28,6 +29,12 @@ import { CCTitleStrategy } from "./app/cc.title";
   imports: [
     BrowserModule,
     HttpClientModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: () => localStorage.getItem('token'),
+        disallowedRoutes: [/\/api\/auth$/],
+      },
+    }),
     BrowserAnimationsModule,
     routing,
     FormsModule,

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Subject, ReplaySubject, Observable } from 'rxjs';
@@ -24,23 +24,13 @@ export class AuthTokenProviderService {
   private _token: string;
   private _nextRefresh: number
 
-  private jwtHelper: JwtHelperService;
-
-  private static getUserFromJwt(jwt: JwtClaimSet): AuthenticatedUser {
-    return {
-      name: jwt.name,
-      preferred_username: jwt.preferred_username,
-      roles: jwt.roles
-    };
-  }
+  private readonly jwtHelper = inject(JwtHelperService);
 
   public static isAnonymous(user: AuthenticatedUser): boolean {
     return (user.preferred_username === AuthTokenProviderService.ANONYMOUS.preferred_username);
   }
 
   constructor() {
-    this.jwtHelper = new JwtHelperService();
-
     const savedToken = localStorage.getItem('token');
     if (savedToken) {
       this.storeToken(savedToken);
@@ -78,8 +68,12 @@ export class AuthTokenProviderService {
     localStorage.setItem('token', value);
     this.loggedIn.next(true);
 
-    const decodedToken: JwtClaimSet = this.jwtHelper.decodeToken(value);
-    const currentUser = AuthTokenProviderService.getUserFromJwt(decodedToken);
+    const jwt = this.jwtHelper.decodeToken<JwtClaimSet>(value);
+    const currentUser = {
+      name: jwt.name,
+      preferred_username: jwt.preferred_username,
+      roles: jwt.roles
+    } as AuthenticatedUser;
     this.currentUser.next(currentUser);
     return currentUser;
   }
