@@ -6,6 +6,8 @@ on:
       - master
   push:
     branches:
+      - bugfix/**
+      - feature/**
       - master
 
 jobs:
@@ -14,15 +16,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK 8
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '8'
         cache: maven
     - name: Setup Node.js environment
-      uses: actions/setup-node@v3.0.0
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: npm
